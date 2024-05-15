@@ -18,21 +18,36 @@
 
 package org.wso2.carbon.identity.api.server.authz.topaz.v1.impl;
 
-import org.wso2.carbon.identity.api.server.authz.topaz.v1.*;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.AuthzApiService;
 import org.wso2.carbon.identity.api.server.authz.topaz.v1.core.ServerAuthzEvaluationService;
 import org.wso2.carbon.identity.api.server.authz.topaz.v1.core.ServerAuthzManagementService;
-import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.*;
-import java.util.List;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.AccessCheckRequest;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.AccessCheckResponse;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.CreationEntityRequestModel;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.CreationRelationRequestModel;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.DecisionTreeEvaluationRequest;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.DecisionTreeEvaluationResponse;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.EntityResponse;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.GraphGenerationRequest;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.GraphGenerationResponse;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.PolicyEvaluationRequest;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.PolicyEvaluationResponse;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.RelationResponse;
 
 import javax.ws.rs.core.Response;
 
+/**
+ * Class to implement the logic for the exposed API endpoints.
+ */
 public class AuthzApiServiceImpl implements AuthzApiService {
 
     private final ServerAuthzManagementService serverAuthzManagementService = new ServerAuthzManagementService();
     private final ServerAuthzEvaluationService serverAuthzEvaluationService = new ServerAuthzEvaluationService();
 
     @Override
-    public Response authzApiEvalV1TTenantIdDecisiontreePost(String tenantId, DecisionTreeEvaluationRequest decisionTreeEvaluationRequest) {
+    public Response authzApiEvalV1TTenantIdDecisiontreePost(
+            String tenantId,
+            DecisionTreeEvaluationRequest decisionTreeEvaluationRequest) {
 
         DecisionTreeEvaluationResponse decisionTreeEvaluationResponse = serverAuthzEvaluationService.decisionTree(
                 tenantId, decisionTreeEvaluationRequest);
@@ -40,7 +55,8 @@ public class AuthzApiServiceImpl implements AuthzApiService {
     }
 
     @Override
-    public Response authzApiEvalV1TTenantIdGraphPost(String tenantId, GraphGenerationRequest graphGenerationRequest) {
+    public Response authzApiEvalV1TTenantIdGraphPost(String tenantId,
+                                                     GraphGenerationRequest graphGenerationRequest) {
 
         GraphGenerationResponse graphGenerationResponse = serverAuthzEvaluationService.graph(
                 tenantId, graphGenerationRequest);
@@ -48,7 +64,8 @@ public class AuthzApiServiceImpl implements AuthzApiService {
     }
 
     @Override
-    public Response authzApiEvalV1TTenantIdCheckPost(String tenantId, AccessCheckRequest accessCheckRequest) {
+    public Response authzApiEvalV1TTenantIdCheckPost(String tenantId,
+                                                     AccessCheckRequest accessCheckRequest) {
 
         AccessCheckResponse accessCheckResponse = serverAuthzEvaluationService.authorizerCheck(
                 tenantId, accessCheckRequest);
@@ -56,7 +73,8 @@ public class AuthzApiServiceImpl implements AuthzApiService {
     }
 
     @Override
-    public Response authzApiEvalV1TTenantIdPolicyPost(String tenantId, PolicyEvaluationRequest policyEvaluationRequest) {
+    public Response authzApiEvalV1TTenantIdPolicyPost(String tenantId,
+                                                      PolicyEvaluationRequest policyEvaluationRequest) {
 
         PolicyEvaluationResponse policyEvaluationResponse = serverAuthzEvaluationService.policyCheck(
                 tenantId, policyEvaluationRequest);
@@ -64,7 +82,9 @@ public class AuthzApiServiceImpl implements AuthzApiService {
     }
 
     @Override
-    public Response authzApiManageV1TTenantIdRelationDelete(String tenantId, String entityType, String entityId, String relation, String subjectType, String subjectId, String subjectRelation) {
+    public Response authzApiManageV1TTenantIdRelationDelete(String tenantId, String entityType, String entityId,
+                                                            String relation, String subjectType, String subjectId,
+                                                            String subjectRelation) {
 
         serverAuthzManagementService.deleteRelation(tenantId, entityType, entityId, relation, subjectType,
                 subjectId, subjectRelation);
@@ -72,7 +92,9 @@ public class AuthzApiServiceImpl implements AuthzApiService {
     }
 
     @Override
-    public Response authzApiManageV1TTenantIdRelationGet(String tenantId, String entityType, String entityId, String relation, String subjectType, String subjectId, String subjectRelation) {
+    public Response authzApiManageV1TTenantIdRelationGet(String tenantId, String entityType, String entityId,
+                                                         String relation, String subjectType, String subjectId,
+                                                         String subjectRelation) {
 
         RelationResponse relationResponse = serverAuthzManagementService.getRelation(tenantId, entityType, entityId,
                 relation, subjectType, subjectId, subjectRelation);
@@ -80,7 +102,8 @@ public class AuthzApiServiceImpl implements AuthzApiService {
     }
 
     @Override
-    public Response authzApiManageV1TTenantIdRelationPost(String tenantId, CreationRelationRequestModel creationRelationRequestModel) {
+    public Response authzApiManageV1TTenantIdRelationPost(String tenantId,
+                                                          CreationRelationRequestModel creationRelationRequestModel) {
 
         RelationResponse relationResponse = serverAuthzManagementService.createRelation(tenantId,
                 creationRelationRequestModel);
@@ -88,21 +111,24 @@ public class AuthzApiServiceImpl implements AuthzApiService {
     }
 
     @Override
-    public Response authzApiManageV1TTenantIdEntityEntityTypeEntityIdDelete(String tenantId, String entityType, String entityId) {
+    public Response authzApiManageV1TTenantIdEntityEntityTypeEntityIdDelete(String tenantId, String entityType,
+                                                                            String entityId) {
 
         serverAuthzManagementService.deleteEntity(tenantId, entityType, entityId);
         return Response.noContent().build();
     }
 
     @Override
-    public Response authzApiManageV1TTenantIdEntityEntityTypeEntityIdGet(String tenantId, String entityType, String entityId) {
+    public Response authzApiManageV1TTenantIdEntityEntityTypeEntityIdGet(String tenantId, String entityType,
+                                                                         String entityId) {
 
         EntityResponse entityResponse = serverAuthzManagementService.getEntity(tenantId, entityType, entityId);
         return Response.ok().entity(entityResponse).build();
     }
 
     @Override
-    public Response authzApiManageV1TTenantIdEntityPost(String tenantId, CreationEntityRequestModel creationEntityRequestModel) {
+    public Response authzApiManageV1TTenantIdEntityPost(String tenantId,
+                                                        CreationEntityRequestModel creationEntityRequestModel) {
 
         EntityResponse entityResponse = serverAuthzManagementService.createEntity(tenantId, creationEntityRequestModel);
         return Response.ok().entity(entityResponse).build();

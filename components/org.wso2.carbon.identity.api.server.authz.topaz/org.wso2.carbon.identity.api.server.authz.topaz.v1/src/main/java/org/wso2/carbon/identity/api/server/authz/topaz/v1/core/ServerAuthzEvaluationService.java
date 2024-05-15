@@ -40,6 +40,9 @@ import java.util.Objects;
 
 import static org.wso2.carbon.identity.api.server.authz.topaz.common.Constants.JOIN_SYMBOL;
 
+/**
+ * Class to handle the implementation of the authorization evaluation endpoints.
+ */
 public class ServerAuthzEvaluationService {
 
     public AccessCheckResponse authorizerCheck(String tenantId, AccessCheckRequest accessCheckRequest) {
@@ -87,7 +90,7 @@ public class ServerAuthzEvaluationService {
 
         String tSubjectId = "";
         String tResourceId = "";
-        if(!Objects.equals(graphGenerationRequest.getSubject().getId(), "")){
+        if (!Objects.equals(graphGenerationRequest.getSubject().getId(), "")) {
             tSubjectId = tenantId + JOIN_SYMBOL + graphGenerationRequest.getSubject().getId();
         } else if (!Objects.equals(graphGenerationRequest.getResource().getId(), "")) {
             tResourceId = tenantId + JOIN_SYMBOL + graphGenerationRequest.getSubject().getId();

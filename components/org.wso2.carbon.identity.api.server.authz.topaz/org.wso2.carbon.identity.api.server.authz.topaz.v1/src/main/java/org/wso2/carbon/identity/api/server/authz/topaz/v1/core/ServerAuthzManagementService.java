@@ -29,6 +29,9 @@ import org.wso2.carbon.identity.application.authz.topaz.handler.topaz.TopazAuthz
 
 import static org.wso2.carbon.identity.api.server.authz.topaz.common.Constants.JOIN_SYMBOL;
 
+/**
+ * Class to handle the implementation of the authorization management endpoints.
+ */
 public class ServerAuthzManagementService {
 
     public EntityResponse getEntity(String tenantId, String entityType, String entityId) {
@@ -75,7 +78,7 @@ public class ServerAuthzManagementService {
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         topazAuthzHandler.getTopazManagementHandler().deleteEntity(topazAuthzHandler.getObjManagementHandler().
-                createDirectoryObject(entityType,id));
+                createDirectoryObject(entityType, id));
     }
 
     public RelationResponse getRelation(String tenantId, String entityType, String entityId, String relation,
