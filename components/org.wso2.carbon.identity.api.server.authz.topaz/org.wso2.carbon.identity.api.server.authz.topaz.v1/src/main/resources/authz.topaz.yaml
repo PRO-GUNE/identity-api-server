@@ -1,0 +1,680 @@
+openapi: 3.0.0
+info:
+  description: >
+    This document specifies an **Authorization with Topaz RESTful API** for **WSO2
+    Identity Server**.
+  version: "v1"
+  title: WSO2 Identity Server - Topaz Authorization Rest API
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    name: WSO2
+    url: 'http://wso2.com/products/identity-server/'
+    email: architecture@wso2.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+paths:
+  /authz/manage/entity:
+    post:
+      summary: Create an entity.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreationEntityRequestModel'
+      responses:
+        '200':
+          description: Successful entity creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /authz/manage/entity/{entity_id}:
+    get:
+      summary: Get an entity.
+      parameters:
+        - name: entity_id
+          in: path
+          description: Entity ID
+          required: true
+          schema:
+            type: string
+        - name: entity_type
+          in: query
+          description: Entity type
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful entity retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete an entity.
+      parameters:
+        - name: entity_type
+          in: path
+          description: Entity type
+          required: true
+          schema:
+            type: string
+        - name: entity_id
+          in: path
+          description: Entity ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful entity deletion
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /authz/manage/relation:
+    post:
+      summary: Create a relation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreationRelationRequestModel'
+      responses:
+        '200':
+          description: Successful relation creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      summary: Get a relation.
+      parameters:
+        - name: entity_type
+          in: query
+          description: Entity type
+          required: true
+          schema:
+            type: string
+            example: "user"
+        - name: entity_id
+          in: query
+          description: Entity ID
+          required: true
+          schema:
+            type: string
+            example: "resource456"
+        - name: relation
+          in: query
+          description: Relation
+          required: true
+          schema:
+            type: string
+            example: "owns"
+        - name: subject_type
+          in: query
+          description: Subject type
+          required: true
+          schema:
+            type: string
+            example: "user"
+        - name: subject_id
+          in: query
+          description: Subject ID
+          required: true
+          schema:
+            type: string
+            example: "user123"
+        - name: subject_relation
+          in: query
+          description: Subject relation
+          required: true
+          schema:
+            type: string
+            example: "manager"
+      responses:
+        '200':
+          description: Successful relation retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationResponse'
+              example:
+                subject_id: "user123"
+                subject_relation: "manager"
+                subject_type: "user"
+                entity_id: "resource456"
+                entity_type: "resource"
+                relation: "owns"
+        '404':
+          description: Relation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: "Relation not found"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: "Internal Server Error"
+
+    delete:
+      summary: Delete a relation.
+      parameters:
+        - name: entity_type
+          in: query
+          description: Entity type
+          required: true
+          schema:
+            type: string
+            example: "user"
+        - name: entity_id
+          in: query
+          description: Entity ID
+          required: true
+          schema:
+            type: string
+            example: "resource456"
+        - name: relation
+          in: query
+          description: Relation
+          required: true
+          schema:
+            type: string
+            example: "owns"
+        - name: subject_type
+          in: query
+          description: Subject type
+          required: true
+          schema:
+            type: string
+            example: "user"
+        - name: subject_id
+          in: query
+          description: Subject ID
+          required: true
+          schema:
+            type: string
+            example: "user123"
+        - name: subject_relation
+          in: query
+          description: Subject relation
+          required: true
+          schema:
+            type: string
+            example: "manager"
+      responses:
+        '204':
+          description: Successful relation deletion
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /authz/manage/policies:
+    get:
+      summary: Get policies
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyGetResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /authz/eval/check:
+    post:
+      summary: Perform access check
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessCheckRequest'
+      responses:
+        '200':
+          description: Successful access check
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessCheckResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /authz/eval/policy:
+    post:
+      summary: Evaluate a single policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyEvaluationRequest'
+      responses:
+        '200':
+          description: Successful policy evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyEvaluationResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /authz/eval/decisiontree:
+    post:
+      summary: Evaluate multiple policies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionTreeEvaluationRequest'
+      responses:
+        '200':
+          description: Successful decision tree evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionTreeEvaluationResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /authz/eval/graph:
+    post:
+      summary: Generate graph
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphGenerationRequest'
+      responses:
+        '200':
+          description: Successful graph generation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphGenerationResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    CreationEntityRequestModel:
+      type: object
+      properties:
+        entity_type:
+          type: string
+          description: Type of the entity
+          example: "user"
+        entity_id:
+          type: string
+          description: ID of the entity
+          example: "user123"
+        display_name:
+          type: string
+          description: Display name of the entity
+          example: "John Doe"
+        properties:
+          type: object
+          description: Properties of the entity
+          example:
+            email: "john.doe@example.com"
+            role: "admin"
+
+    EntityResponse:
+      type: object
+      description: Result of the entity operation
+      properties:
+        entity_id:
+          type: string
+          description: ID of the entity
+          example: "jane-eyre"
+        entity_type:
+          type: string
+          description: Type of the entity
+          example: "user"
+        display_name:
+          type: string
+          description: The display name of the entity
+          example: "Jane Eyre"
+        properties:
+          type: object
+          description: Properties of the entity
+          example:
+            prop1: value1
+            prop2: value2
+
+    CreationRelationRequestModel:
+      type: object
+      properties:
+        subject_id:
+          type: string
+          description: ID of the subject
+          example: "user123"
+        subject_relation:
+          type: string
+          description: Relation of the subject
+          example: "manager"
+        subject_type:
+          type: string
+          description: Type of the subject
+          example: "user"
+        entity_id:
+          type: string
+          description: ID of the entity
+          example: "resource456"
+        entity_type:
+          type: string
+          description: Type of the entity
+          example: "resource"
+        relation:
+          type: string
+          description: Relation between the subject and entity
+          example: "owner"
+
+    RelationResponse:
+      type: object
+      properties:
+        subject_id:
+          type: string
+          description: ID of the subject
+          example: "user123"
+        subject_relation:
+          type: string
+          description: Relation of the subject
+          example: "manager"
+        subject_type:
+          type: string
+          description: Type of the subject
+          example: "user"
+        entity_id:
+          type: string
+          description: ID of the entity
+          example: "resource456"
+        entity_type:
+          type: string
+          description: Type of the entity
+          example: "resource"
+        relation:
+          type: string
+          description: Relation between the subject and entity
+          example: "owns"
+
+    PolicyGetResponse:
+      type: object
+      properties:
+        policies:
+          type: array
+          description: Policies available in the topaz authorizer
+          items:
+            type: object
+
+    AccessCheckRequest:
+      type: object
+      properties:
+        subject:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "user123"
+            type:
+              type: string
+              example: "user"
+            relation:
+              type: string
+              example: "manager"
+        resource:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "resource456"
+            type:
+              type: string
+              example: "resource"
+        relation:
+          type: object
+          properties:
+            method:
+              type: string
+              example: "GET"
+
+    AccessCheckResponse:
+      type: object
+      properties:
+        decision:
+          type: boolean
+          example: true
+
+    PolicyEvaluationRequest:
+      type: object
+      properties:
+        identity_context:
+          type: object
+          description: Identity context of the request
+          properties:
+            type:
+              type: string
+            identity:
+              type: string
+        resource_context:
+          type: object
+          description: Context of the request
+          example:
+            resource: "hello-resource"
+            tenant: "orgA"
+        policy_context:
+          type: object
+          description: Policy context of the request
+          properties:
+            decisions:
+              type: array
+              description: Set of decisions to be evaluated
+              items:
+                type: string
+              example:
+                [ "allowed", "enabled" ]
+            path:
+              type: string
+              description: Path of the policy to be evaluated
+              example:
+                "policy.GET.resource.__id"
+
+    PolicyEvaluationResponse:
+      type: object
+      properties:
+        decisions:
+          type: object
+          example:
+            decision1: true
+            decision2: false
+
+    DecisionTreeEvaluationRequest:
+      type: object
+      properties:
+        identity_context:
+          type: object
+          properties:
+            type:
+              type: string
+              example: "IDENTITY_TYPE_SUB"
+            identity:
+              type: string
+              example: "jane@the-eyres.com"
+        options:
+          type: object
+          properties:
+            path_separator:
+              type: string
+              example: "PATH_SEPARATOR_DOT"
+        resource_context:
+          type: object
+        policy_context:
+          type: object
+          properties:
+            decisions:
+              type: array
+              items:
+                type: string
+                example: "allowed"
+            path:
+              type: string
+              example: "policies.GET.app.__id"
+
+    DecisionTreeEvaluationResponse:
+      type: object
+      properties:
+        decisions:
+          type: object
+
+    GraphGenerationRequest:
+      type: object
+      properties:
+        subject:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "user123"
+            type:
+              type: string
+              example: "user"
+            relation:
+              type: string
+              example: "manager"
+        resource:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "resource456"
+            type:
+              type: string
+              example: "resource"
+        relation:
+          type: object
+          properties:
+            method:
+              type: string
+              example: "GET"
+
+    GraphGenerationResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              object_type:
+                type: string
+                example: "user"
+              object_id:
+                type: string
+                example: "jane@the-eyres.com"
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: AAA-00000
+        message:
+          type: string
+          example: Some Error Message
+        description:
+          type: string
+          example: Some Error Description
+        traceId:
+          type: string
+          example: e0fbcfeb-3617-43c4-8dd0-7b7d38e13047
