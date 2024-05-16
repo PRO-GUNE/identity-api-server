@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.identity.api.server.authz.topaz.v1.core;
 
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.api.server.authz.topaz.common.TopazAuthzServiceHolder;
 import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.AccessCheckRequest;
 import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.AccessCheckResponse;
@@ -41,23 +42,24 @@ import java.util.Objects;
 import static org.wso2.carbon.identity.api.server.authz.topaz.common.Constants.JOIN_SYMBOL;
 
 /**
- * Class to handle the implementation of the authorization evaluation endpoints.
+ * Class to handle the authorization evaluation endpoints.
  */
 public class ServerAuthzEvaluationService {
+    public AccessCheckResponse authorizerCheck(AccessCheckRequest accessCheckRequest) {
 
-    public AccessCheckResponse authorizerCheck(String tenantId, AccessCheckRequest accessCheckRequest) {
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
 
-        String tSubjectId = tenantId + JOIN_SYMBOL + accessCheckRequest.getSubject().getId();
-        String tResourceId = tenantId + JOIN_SYMBOL + accessCheckRequest.getResource().getId();
+        String oSubjectId = orgId + JOIN_SYMBOL + accessCheckRequest.getSubject().getId();
+        String oResourceId = orgId + JOIN_SYMBOL + accessCheckRequest.getResource().getId();
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         boolean decision = topazAuthzHandler.getTopazDirectoryHandler().check(
                 topazAuthzHandler.getObjManagementHandler().createDirectoryRequestObject(
                         accessCheckRequest.getSubject().getType(),
-                        tSubjectId,
+                        oSubjectId,
                         accessCheckRequest.getSubject().getRelation(),
                         accessCheckRequest.getResource().getType(),
-                        tResourceId,
+                        oResourceId,
                         accessCheckRequest.getRelation().getMethod()));
 
         AccessCheckResponse accessCheckResponse = new AccessCheckResponse();
@@ -66,15 +68,17 @@ public class ServerAuthzEvaluationService {
         return accessCheckResponse;
     }
 
-    public PolicyEvaluationResponse policyCheck(String tenantId, PolicyEvaluationRequest policyEvaluationRequest) {
+    public PolicyEvaluationResponse policyCheck(PolicyEvaluationRequest policyEvaluationRequest) {
 
-        String tIdentityId = tenantId + JOIN_SYMBOL + policyEvaluationRequest.getIdentityContext().getIdentity();
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
+
+        String oIdentityId = orgId + JOIN_SYMBOL + policyEvaluationRequest.getIdentityContext().getIdentity();
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         CheckAuthzResponse checkAuthzResponse = topazAuthzHandler.getTopazAuthorizerHandler().check(
                 topazAuthzHandler.getObjManagementHandler().createIsContextObject(
                         policyEvaluationRequest.getIdentityContext().getType(),
-                        tIdentityId,
+                        oIdentityId,
                         policyEvaluationRequest.getResourceContext(),
                         policyEvaluationRequest.getPolicyContext().getDecisions(),
                         policyEvaluationRequest.getPolicyContext().getPath()));
@@ -86,24 +90,25 @@ public class ServerAuthzEvaluationService {
         return policyEvaluationResponse;
     }
 
-    public GraphGenerationResponse graph(String tenantId, GraphGenerationRequest graphGenerationRequest) {
+    public GraphGenerationResponse graph(GraphGenerationRequest graphGenerationRequest) {
 
-        String tSubjectId = "";
-        String tResourceId = "";
+        String oSubjectId = "";
+        String oResourceId = "";
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
         if (!Objects.equals(graphGenerationRequest.getSubject().getId(), "")) {
-            tSubjectId = tenantId + JOIN_SYMBOL + graphGenerationRequest.getSubject().getId();
+            oSubjectId = orgId + JOIN_SYMBOL + graphGenerationRequest.getSubject().getId();
         } else if (!Objects.equals(graphGenerationRequest.getResource().getId(), "")) {
-            tResourceId = tenantId + JOIN_SYMBOL + graphGenerationRequest.getSubject().getId();
+            oResourceId = orgId + JOIN_SYMBOL + graphGenerationRequest.getSubject().getId();
         }
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         DirectoryGraphAuthzResponse directoryGraphAuthzResponse = topazAuthzHandler.getTopazDirectoryHandler().graph(
                 topazAuthzHandler.getObjManagementHandler().createDirectoryRequestObject(
                         graphGenerationRequest.getSubject().getType(),
-                        tSubjectId,
+                        oSubjectId,
                         graphGenerationRequest.getSubject().getRelation(),
                         graphGenerationRequest.getResource().getType(),
-                        tResourceId,
+                        oResourceId,
                         graphGenerationRequest.getRelation().getMethod()));
 
         GraphGenerationResponse graphGenerationResponse = new GraphGenerationResponse();
@@ -121,16 +126,16 @@ public class ServerAuthzEvaluationService {
         return graphGenerationResponse;
     }
 
-    public DecisionTreeEvaluationResponse decisionTree(String tenantId,
-                                                       DecisionTreeEvaluationRequest decisionTreeEvaluationRequest) {
+    public DecisionTreeEvaluationResponse decisionTree(DecisionTreeEvaluationRequest decisionTreeEvaluationRequest) {
 
-        String tIdentityId = tenantId + JOIN_SYMBOL + decisionTreeEvaluationRequest.getIdentityContext().getIdentity();
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
+        String oIdentityId = orgId + JOIN_SYMBOL + decisionTreeEvaluationRequest.getIdentityContext().getIdentity();
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         DecisionTreeAuthzResponse decisionTreeAuthzResponse = topazAuthzHandler.getTopazAuthorizerHandler().
                 decisiontree(topazAuthzHandler.getObjManagementHandler().createDecisionTreeContextObject(
                         decisionTreeEvaluationRequest.getIdentityContext().getType(),
-                        tIdentityId,
+                        oIdentityId,
                         decisionTreeEvaluationRequest.getResourceContext(),
                         decisionTreeEvaluationRequest.getPolicyContext().getDecisions(),
                         decisionTreeEvaluationRequest.getPolicyContext().getPath(),

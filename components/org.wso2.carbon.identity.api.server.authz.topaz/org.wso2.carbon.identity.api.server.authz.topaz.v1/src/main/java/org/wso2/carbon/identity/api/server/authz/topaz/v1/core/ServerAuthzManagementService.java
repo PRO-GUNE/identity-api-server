@@ -18,29 +18,33 @@
 
 package org.wso2.carbon.identity.api.server.authz.topaz.v1.core;
 
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.api.server.authz.topaz.common.TopazAuthzServiceHolder;
 import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.CreationEntityRequestModel;
 import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.CreationRelationRequestModel;
 import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.EntityResponse;
+import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.PolicyGetResponse;
 import org.wso2.carbon.identity.api.server.authz.topaz.v1.model.RelationResponse;
 import org.wso2.carbon.identity.application.authz.topaz.handler.core.DirectoryEntityResponse;
 import org.wso2.carbon.identity.application.authz.topaz.handler.core.DirectoryRelationResponse;
+import org.wso2.carbon.identity.application.authz.topaz.handler.core.PolicyResponse;
 import org.wso2.carbon.identity.application.authz.topaz.handler.topaz.TopazAuthzHandler;
 
 import static org.wso2.carbon.identity.api.server.authz.topaz.common.Constants.JOIN_SYMBOL;
 
 /**
- * Class to handle the implementation of the authorization management endpoints.
+ * Class to handle the authorization management endpoints.
  */
 public class ServerAuthzManagementService {
 
-    public EntityResponse getEntity(String tenantId, String entityType, String entityId) {
+    public EntityResponse getEntity(String entityId, String entityType) {
 
-        String id = tenantId + JOIN_SYMBOL + entityId;
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
+        String oEntityId = orgId + JOIN_SYMBOL + entityId;
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         DirectoryEntityResponse directoryEntityResponse = topazAuthzHandler.getTopazManagementHandler().getEntity(
-                topazAuthzHandler.getObjManagementHandler().createDirectoryObject(entityType, id));
+                topazAuthzHandler.getObjManagementHandler().createDirectoryObject(entityType, oEntityId));
 
         EntityResponse entityResponse = new EntityResponse();
         entityResponse.setEntityId(directoryEntityResponse.getEntityId());
@@ -51,16 +55,17 @@ public class ServerAuthzManagementService {
         return entityResponse;
     }
 
-    public EntityResponse createEntity(String tenantId, CreationEntityRequestModel creationEntityRequestModel) {
+    public EntityResponse createEntity(CreationEntityRequestModel creationEntityRequestModel) {
 
-        String id = tenantId + JOIN_SYMBOL + creationEntityRequestModel.getEntityId();
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
+        String oEntityId = orgId + JOIN_SYMBOL + creationEntityRequestModel.getEntityId();
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         DirectoryEntityResponse directoryEntityResponse = topazAuthzHandler.getTopazManagementHandler().getEntity(
                 topazAuthzHandler.getObjManagementHandler().createDirectoryObject(
                         creationEntityRequestModel.getDisplayName(),
                         creationEntityRequestModel.getEntityType(),
-                        id,
+                        oEntityId,
                         creationEntityRequestModel.getProperties()));
 
         EntityResponse entityResponse = new EntityResponse();
@@ -72,25 +77,27 @@ public class ServerAuthzManagementService {
         return entityResponse;
     }
 
-    public void deleteEntity(String tenantId, String entityType, String entityId) {
+    public void deleteEntity(String entityType, String entityId) {
 
-        String id = tenantId + JOIN_SYMBOL + entityId;
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
+        String oEntityId = orgId + JOIN_SYMBOL + entityId;
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         topazAuthzHandler.getTopazManagementHandler().deleteEntity(topazAuthzHandler.getObjManagementHandler().
-                createDirectoryObject(entityType, id));
+                createDirectoryObject(entityType, oEntityId));
     }
 
-    public RelationResponse getRelation(String tenantId, String entityType, String entityId, String relation,
+    public RelationResponse getRelation(String entityType, String entityId, String relation,
                                         String subjectType, String subjectId, String subjectRelation) {
 
-        String tSubjectId = tenantId + JOIN_SYMBOL + subjectId;
-        String tEntityId = tenantId + JOIN_SYMBOL + entityId;
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
+        String oSubjectId = orgId + JOIN_SYMBOL + subjectId;
+        String oEntityId = orgId + JOIN_SYMBOL + entityId;
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         DirectoryRelationResponse directoryRelationResponse = topazAuthzHandler.getTopazManagementHandler().getRelation(
                 topazAuthzHandler.getObjManagementHandler().createDirectoryRelation(
-                        tEntityId, entityType, relation, tSubjectId, subjectType, subjectRelation));
+                        oEntityId, entityType, relation, oSubjectId, subjectType, subjectRelation));
 
         RelationResponse relationResponse = new RelationResponse();
         relationResponse.setEntityId(directoryRelationResponse.getEntityId());
@@ -103,17 +110,19 @@ public class ServerAuthzManagementService {
         return relationResponse;
     }
 
-    public RelationResponse createRelation(String tenantId, CreationRelationRequestModel creationRelationRequestModel) {
-        String tSubjectId = tenantId + JOIN_SYMBOL + creationRelationRequestModel.getSubjectId();
-        String tEntityId = tenantId + JOIN_SYMBOL + creationRelationRequestModel.getEntityId();
+    public RelationResponse createRelation(CreationRelationRequestModel creationRelationRequestModel) {
+
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
+        String oSubjectId = orgId + JOIN_SYMBOL + creationRelationRequestModel.getSubjectId();
+        String oEntityId = orgId + JOIN_SYMBOL + creationRelationRequestModel.getEntityId();
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         DirectoryRelationResponse directoryRelationResponse = topazAuthzHandler.getTopazManagementHandler().getRelation(
                 topazAuthzHandler.getObjManagementHandler().createDirectoryRelation(
-                        tEntityId,
+                        oEntityId,
                         creationRelationRequestModel.getEntityType(),
                         creationRelationRequestModel.getRelation(),
-                        tSubjectId,
+                        oSubjectId,
                         creationRelationRequestModel.getSubjectType(),
                         creationRelationRequestModel.getSubjectRelation()));
 
@@ -128,14 +137,26 @@ public class ServerAuthzManagementService {
         return relationResponse;
     }
 
-    public void deleteRelation(String tenantId, String entityType, String entityId, String relation,
+    public void deleteRelation(String entityType, String entityId, String relation,
                                String subjectType, String subjectId, String subjectRelation) {
 
-        String tSubjectId = tenantId + JOIN_SYMBOL + subjectId;
-        String tEntityId = tenantId + JOIN_SYMBOL + entityId;
+        String orgId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getOrganizationId();
+        String oSubjectId = orgId + JOIN_SYMBOL + subjectId;
+        String oEntityId = orgId + JOIN_SYMBOL + entityId;
         TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
 
         topazAuthzHandler.getTopazManagementHandler().deleteRelation(topazAuthzHandler.getObjManagementHandler().
-                createDirectoryRelation(tEntityId, entityType, relation, tSubjectId, subjectType, subjectRelation));
+                createDirectoryRelation(oEntityId, entityType, relation, oSubjectId, subjectType, subjectRelation));
     }
+
+    public PolicyGetResponse getPolicies() {
+
+        TopazAuthzHandler topazAuthzHandler = TopazAuthzServiceHolder.getTopazAuthzHandler();
+        PolicyResponse policyResponse = topazAuthzHandler.getTopazManagementHandler().getPolicies();
+        PolicyGetResponse policyGetResponse = new PolicyGetResponse();
+        policyGetResponse.setPolicies(policyResponse.getPolicies());
+
+        return policyGetResponse;
+    }
+
 }
